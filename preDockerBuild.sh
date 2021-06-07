@@ -31,7 +31,7 @@ if [ ! -f ${HOME}/.m2/settings.xml ]; then
     mkdir ${HOME}/.m2
 fi
 
-curl -sSL "https://${gitApiKey}@raw.github.ibm.com/de-identification/de-id-devops/${DEVELOPER_BRANCH}/scripts/de-identification-settings.xml" > ${HOME}/.m2/settings.xml
+curl -sSL "https://${gitApiKey}@raw.github.ibm.com/de-identification/de-id-devops/${DEVELOPER_BRANCH}/scripts/de-identification-settings.xml" > ./settings.xml
 
 # Set the version.  If the branch is master, use the ${RELEASE_VERSION}-SNAPSHOT
 # If the branch is not master, include branch name in the version

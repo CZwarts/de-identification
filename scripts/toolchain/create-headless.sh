@@ -10,11 +10,13 @@ set -ex
 # GIT_API_KEY             # github.ibm.com API key
 # DEVELOPER_BRANCH        # name of the GIT branch used for de-id-devops, if empty or null defaults to master
 # DEVELOPER_ID            # name used to specify namespace/umbrella repo
+# OC_PASS                 # APIKey for the openshift cluster
 
 export TOOLCHAIN_BRANCH="stable-3.3.1"
 export WHC_COMMONS_BRANCH=${TOOLCHAIN_BRANCH}
 export INPUT_GIT_BRANCH=`git rev-parse --abbrev-ref HEAD` # get the current branch
 export gitrepourl="https://github.com/Alvearie/de-identification" # CI git repo url
+export OC_USER=apikey
 
 # If DEVELOPER_ID is set, use it as part of the toolchain name 
 if ! [ -z "$DEVELOPER_ID" ]; then
@@ -40,5 +42,10 @@ chmod 755 createToolchain.sh
 # Get the property file
 curl -sSL -u "${GIT_USER}:${GIT_API_KEY}" "https://raw.github.ibm.com/de-identification/de-id-devops/${DEVELOPER_BRANCH}/scripts/common.properties" > common.properties
 source common.properties
+
+
+sed -i '/^[ \t]*--data "form.pipeline.parameters.cluster-name=.*/a     --data "form.pipeline.parameters.OC_PASS='"${OC_PASS}"'" \\' ./createToolchain.sh
+sed -i '/^[ \t]*--data "form.pipeline.parameters.cluster-name=.*/a     --data "form.pipeline.parameters.OC_USER='"${OC_USER}"'" \\' ./createToolchain.sh
+sed -i '/^[ \t]*--data "form.pipeline.parameters.cluster-name=.*/a     --data "form.pipeline.parameters.OC_SERVER_URL='"${OC_SERVER_URL}"'" \\' ./createToolchain.sh
 
 ./createToolchain.sh -t CI -b ${TOOLCHAIN_BRANCH} -s common.properties -c ${TOOLCHAIN_NAME} -m ${gitrepourl} -i ${INPUT_GIT_BRANCH}  -v ${INPUT_GIT_UMBRELLA_BRANCH} -b ${TOOLCHAIN_TEMPLATE_BRANCH}
